@@ -28,7 +28,7 @@ class ContinuousDAN:
 
         self.newFinalParameterizedListOfLists = copy.deepcopy(self.finalParameterizedListOfLists)
 
-        for columnIndex in tqdm(range(len(self.continuousDatasetListOfLists[0]))):
+        for columnIndex in range(len(self.continuousDatasetListOfLists[0])):
             maxColumnVal = np.max(self.continuousDatasetListOfLists[:, columnIndex])
             minColumnVal = np.min(self.continuousDatasetListOfLists[:, columnIndex])
             columnBinSizes = (maxColumnVal - minColumnVal) / self.epsilon
@@ -40,7 +40,7 @@ class ContinuousDAN:
 
             self.listOfColumnDicts.append(self.columnDict)
 
-            for rowIndex in range(len(self.continuousDatasetListOfLists)):
+            for rowIndex in tqdm(range(len(self.continuousDatasetListOfLists))):
                 rowColumnVal = self.continuousDatasetListOfLists[rowIndex, columnIndex]
                 rowColumnValIndex = 0
                 for floatDictEntry, keyVal in enumerate(self.columnDict.keys()):
@@ -82,21 +82,37 @@ class ContinuousDAN:
                 columnBinSizes = 1.0
                 
             rowColumnVal = inputList[columnIndex]
-            
-            rowColumnValIndex = 0
-            for floatDictEntry, keyVal in enumerate(sortedKeys):
-                if keyVal <= rowColumnVal and keyVal + columnBinSizes >= rowColumnVal:
-                    rowColumnValIndex = floatDictEntry
-                    
-            totalHolderList = []
-            
-            for floatDictEntry in range(self.epsilon):
-                finalHolderList = []
-                basinDif = self.epsilon - abs(floatDictEntry - rowColumnValIndex)
+
+            if rowColumnVal != None:
+                rowColumnValIndex = 0
+                for floatDictEntry, keyVal in enumerate(sortedKeys):
+                    if keyVal <= rowColumnVal and keyVal + columnBinSizes >= rowColumnVal:
+                        rowColumnValIndex = floatDictEntry
+                        
+                totalHolderList = []
                 
-                finalHolderList.extend([1, 0] * basinDif)
-                finalHolderList.extend([0, 1] * abs(floatDictEntry - rowColumnValIndex))
-                totalHolderList.append(finalHolderList)
+                for floatDictEntry in range(self.epsilon):
+                    finalHolderList = []
+                    basinDif = self.epsilon - abs(floatDictEntry - rowColumnValIndex)
+                    
+                    finalHolderList.extend([1, 0] * basinDif)
+                    finalHolderList.extend([0, 1] * abs(floatDictEntry - rowColumnValIndex))
+                    totalHolderList.append(finalHolderList)
+
+            else:
+                rowColumnValIndex = 0
+                for floatDictEntry, keyVal in enumerate(sortedKeys):
+                    rowColumnValIndex = floatDictEntry
+                        
+                totalHolderList = []
+                
+                for floatDictEntry in range(self.epsilon):
+                    finalHolderList = []
+                    basinDif = self.epsilon - abs(floatDictEntry - rowColumnValIndex)
+                    
+                    finalHolderList.extend([0, 0] * basinDif)
+                    finalHolderList.extend([0, 0] * abs(floatDictEntry - rowColumnValIndex))
+                    totalHolderList.append(finalHolderList)
                 
             finalParameterizedList.append(totalHolderList)
             
@@ -149,9 +165,12 @@ class ContinuousDAN:
             
         return reconstructedInputs
 
-    def getOutput(self, inputList):
+    def getOutput(self, inputList, outputIndex=False):
         parameterizedInputList = self.parameterizeInput(inputList)
-        return self.unparameterizeOutput(self.continuousDAN.getOutput(parameterizedInputList))
+        if not outputIndex:
+            return self.unparameterizeOutput(self.continuousDAN.getOutput(parameterizedInputList))
+        else:
+            return self.continuousDAN.getOutput(parameterizedInputList, returnOutputIndex=True)
 
 
 if __name__ == "__main__":
