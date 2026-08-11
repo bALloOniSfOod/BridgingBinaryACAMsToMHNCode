@@ -1,3 +1,10 @@
+# Written by Ryan Cerauli for the DAN Research Program headed by Anthony F. Beavers @ Indiana University. Copyright 2026. 
+# See https://www.afbeavers.net/drg for more information
+
+# This file holds the binned xln(x) data from 0 to 1
+
+
+
 xlnx_list = [[0.001, 0.006907755279],
 [0.002, 0.012429216197],
 [0.003, 0.017427428971],
