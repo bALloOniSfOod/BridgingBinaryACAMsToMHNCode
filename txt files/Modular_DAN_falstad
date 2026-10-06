@@ -1,3 +1,7 @@
+$$$ Paste this into Falstad Circuit Simulator to get a n=15, m=10 DAN circuit $$$
+
+
+
 <cir f="1" ts="0.000005" ic="10.20027730826997" cb="50" pb="43" vr="5" mts="5e-11">
   <ccm nm="15bit_register" f="0" sx="2" sy="16" bcs="1">
     <ext nm="1" nd="8" ps="0" sd="2"/>
